@@ -1,47 +1,9 @@
-import unittest
-
-class TestDay01(unittest.TestCase):
-
-    def test_example_A(self):
-        inputFile = open("day-01/example.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day01A(input)
-
-        print (f'Example result A: {result}')
-        self.assertEqual(result, 7)
-
-
-    def test_puzzleInput_A(self):
-        inputFile = open("day-01/input.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day01A(input)
-
-        print (f'puzzle data result A: {result}')
-
-
-    def test_example_B(self):
-        inputFile = open("day-01/example.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day01B(input)
-
-        print (f'Example result B: {result}')
-        self.assertEqual(result, 5)
-
-
-    def test_puzzleInput_B(self):
-        inputFile = open("day-01/input.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day01B(input)
-
-        print (f'puzzle data result B: {result}')
+def readInputFromFile(fileName):
+    inputFile = open(fileName, "r")
+    input = inputFile.readlines()
+    input = [x.strip() for x in input]
+    inputFile.close()
+    return input
 
 
 def day01A(input):
@@ -74,5 +36,15 @@ def day01B(input):
     return increase
 
 
+def main():
+    example = readInputFromFile("day-01/example.txt")
+    input = readInputFromFile("day-01/input.txt")
+
+    print(f'Result example A: {day01A(example)}\n')
+    print(f'Result puzzle data A: {day01A(input)}\n')
+    print(f'Result example B: {day01B(example)}\n')
+    print(f'Result puzzle data B: {day01B(input)}\n')
+
+
 if __name__ == "__main__":
-    unittest.main()
+    main()

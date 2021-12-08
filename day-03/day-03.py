@@ -1,9 +1,9 @@
 def readInputFromFile(fileName):
-        inputFile = open(fileName, "r")
-        input = inputFile.readlines()
-        input = [x.strip() for x in input]
-        inputFile.close()
-        return input
+    inputFile = open(fileName, "r")
+    input = inputFile.readlines()
+    input = [x.strip() for x in input]
+    inputFile.close()
+    return input
 
 
 def getMostCommonBitAtPos(input, index):

@@ -1,47 +1,9 @@
-import unittest
-
-class TestDay02(unittest.TestCase):
-
-    def test_example_A(self):
-        inputFile = open("day-02/example.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day02A(input)
-
-        print (f'Example result A: {result}')
-        self.assertEqual(result, 150)
-
-
-    def test_puzzleInput_A(self):
-        inputFile = open("day-02/input.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day02A(input)
-
-        print (f'puzzle data result A: {result}')
-
-
-    def test_example_B(self):
-        inputFile = open("day-02/example.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day02B(input)
-
-        print (f'Example result B: {result}')
-        self.assertEqual(result, 900)
-
-
-    def test_puzzleInput_B(self):
-        inputFile = open("day-02/input.txt", "r")
-        input = inputFile.readlines()
-        inputFile.close()
-
-        result = day02B(input)
-
-        print (f'puzzle data result B: {result}')
+def readInputFromFile(fileName):
+    inputFile = open(fileName, "r")
+    input = inputFile.readlines()
+    input = [x.strip() for x in input]
+    inputFile.close()
+    return input
 
 
 def day02A(input):
@@ -60,7 +22,7 @@ def day02A(input):
         elif direction == "up":
             depth -= count
 
-    print (f'horizontal position: {horizontalPos} | depth: {depth}')
+    print(f'horizontal position: {horizontalPos} | depth: {depth}')
     return horizontalPos * depth
 
 
@@ -82,9 +44,19 @@ def day02B(input):
         elif direction == "up":
             aim -= count
 
-    print (f'horizontal position: {horizontalPos} | depth: {depth}')
+    print(f'horizontal position: {horizontalPos} | depth: {depth}')
     return horizontalPos * depth
 
 
+def main():
+    example = readInputFromFile("day-02/example.txt")
+    input = readInputFromFile("day-02/input.txt")
+
+    print(f'Result example A: {day02A(example)}\n')
+    print(f'Result puzzle data A: {day02A(input)}\n')
+    print(f'Result example B: {day02B(example)}\n')
+    print(f'Result puzzle data B: {day02B(input)}\n')
+
+
 if __name__ == "__main__":
-    unittest.main()
+    main()
