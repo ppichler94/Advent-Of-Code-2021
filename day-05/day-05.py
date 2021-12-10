@@ -10,7 +10,8 @@ def readInputFromFile(fileName):
 
 
 class Map:
-    def __init__(self, input):
+    def __init__(self, input, considerDiagonals=False):
+        self.considerDiagonals = considerDiagonals
         self.parseInput(input)
         self.calculateDimension()
         self.map = np.zeros([self.height, self.width], dtype=int)
@@ -40,6 +41,8 @@ class Map:
                 self.addHorizontalLine(start[1], start[0], end[0])
             elif start[0] == end[0]:
                 self.addVerticalLine(start[0], start[1], end[1])
+            elif self.considerDiagonals:
+                self.addDiagonalLine(start, end)
 
     def addHorizontalLine(self, y, x1, x2):
         if x2 < x1:
@@ -53,18 +56,30 @@ class Map:
         for y in range(y1, y2 + 1):
             self.map[y, x] += 1
 
+    def addDiagonalLine(self, start, end):
+        dir_x = 1 if start[0] < end[0] else -1
+        dir_y = 1 if start[1] < end[1] else -1
+        x1, x2 = start[0], end[0]
+        y1 = start[1]
+        while True:
+            self.map[y1, x1] += 1
+            x1 += dir_x
+            y1 += dir_y
+            if x1 == x2 + dir_x:
+                break
+
     def getNumberOfOverlaps(self):
         return self.map[self.map > 1].size
 
 
 def day05A(input):
     map = Map(input)
-
     return map.getNumberOfOverlaps()
 
 
 def day05B(input):
-    return 0
+    map = Map(input, True)
+    return map.getNumberOfOverlaps()
 
 
 def main():
@@ -73,8 +88,8 @@ def main():
 
     print(f'Result example A: {day05A(example)}\n')
     print(f'Result puzzle data A: {day05A(input)}\n')
-    # print(f'Result example B: {day05B(example)}\n')
-    # print(f'Result puzzle data B: {day05B(input)}\n')
+    print(f'Result example B: {day05B(example)}\n')
+    print(f'Result puzzle data B: {day05B(input)}\n')
 
 
 if __name__ == "__main__":
