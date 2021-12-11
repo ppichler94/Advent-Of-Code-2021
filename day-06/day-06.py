@@ -10,17 +10,21 @@ def readInputFromFile(fileName):
 
 
 class Population:
-    
+
     def __init__(self, input) -> None:
-        self.population = np.array([int(x) for x in input[0].split(",")])
+        population = np.array([int(x) for x in input[0].split(",")])
+        self.bins = np.zeros(10)
+        for i in range(0, 10):
+            self.bins[i] = (population == i).sum()
 
     def __tick(self):
-        self.population -= 1
+        self.bins = np.roll(self.bins, -1)
 
     def __spawnNew(self):
-        zeros = self.population == 0
-        self.population[zeros] = 7
-        self.population = np.append(self.population, [9] * np.count_nonzero(zeros))
+        numberOfZeros = self.bins[0]
+        self.bins[0] = 0
+        self.bins[7] += numberOfZeros
+        self.bins[9] += numberOfZeros
 
     def simulateDays(self, numberOfDays):
         for day in range(0, numberOfDays):
@@ -28,7 +32,7 @@ class Population:
             self.__tick()
 
     def size(self):
-        return self.population.size
+        return self.bins.sum()
 
 
 def day06A(input):
@@ -38,7 +42,9 @@ def day06A(input):
 
 
 def day06B(input):
-    return 0
+    population = Population(input)
+    population.simulateDays(256)
+    return population.size()
 
 
 def main():
