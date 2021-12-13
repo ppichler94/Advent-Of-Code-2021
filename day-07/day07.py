@@ -48,8 +48,8 @@ def day07B(input):
     return minimalCost
 
 def main():
-    example = readInputFromFile("example.txt")
-    input = readInputFromFile("input.txt")
+    example = readInputFromFile("day-07/example.txt")
+    input = readInputFromFile("day-07/input.txt")
 
     print(f'Result example A: {day07A(example)}\n')
     print(f'Result puzzle data A: {day07A(input)}\n')

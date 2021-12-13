@@ -103,8 +103,8 @@ def day08B(input):
 
 
 def main():
-    example = readInputFromFile("example.txt")
-    input = readInputFromFile("input.txt")
+    example = readInputFromFile("day-08/example.txt")
+    input = readInputFromFile("day-08/input.txt")
 
     print(f'Result example A: {day08A(example)}\n')
     print(f'Result puzzle data A: {day08A(input)}\n')
