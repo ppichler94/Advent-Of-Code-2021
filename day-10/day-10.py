@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def read_input_from_file(file_name):
     input_file = open(file_name, "r")
     input = input_file.readlines()
@@ -6,25 +9,62 @@ def read_input_from_file(file_name):
     return input
 
 
-def day10a(input):
-    point_table = {")": 3, "]": 57, "}": 1197, ">": 25137}
+def check_character(character, stack):
     matching_character = {"(": ")", "[": "]", "{": "}", "<": ">"}
+    if character in ["(", "[", "{", "<"]:
+        stack.append(character)
+    else:
+        last_character = stack.pop()
+        required_character = matching_character[last_character]
+        if character != required_character:
+            return False
+    return True
+
+
+def get_points_for_corrupt_line(line):
+    point_table = {")": 3, "]": 57, "}": 1197, ">": 25137}
+    stack = []
+    for character in line:
+        matching = check_character(character, stack)
+        if not matching:
+            return point_table[character]
+    return 0
+
+
+def get_points_to_finish_line(line):
+    point_table = {"(": 1, "[": 2, "{": 3, "<": 4}
+    stack = []
+    for character in line:
+        check_character(character, stack)
+    points = 0
+    stack.reverse()
+    for c in stack:
+        points = points * 5 + point_table[c]
+    return points
+
+
+def day10a(input):
     points = 0
     for line in input:
-        stack = []
-        for character in line:
-            if character in ["(", "[", "{", "<"]:
-                stack.append(character)
-            else:
-                last_character = stack.pop()
-                required_character = matching_character[last_character]
-                if (character != required_character):
-                    points += point_table[character]
+        points += get_points_for_corrupt_line(line)
     return points
 
 
 def day10b(input):
-    return 0
+    points = []
+    index = 0
+    while index < len(input):
+        line = input[index]
+        corrupt = get_points_for_corrupt_line(line) > 0
+        if corrupt:
+            input.pop(index)
+        else:
+            index += 1
+    for line in input:
+        points.append(get_points_to_finish_line(line))
+    points = np.array(points)
+
+    return np.median(points)
 
 
 def main():
