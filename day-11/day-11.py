@@ -9,26 +9,36 @@ def read_input_from_file(file_name):
     return input
 
 
-def day11a(input):
+def increase_around(energy_levels, position):
+    i_min = max(0, position[0] - 1)
+    i_max = min(energy_levels.shape[1], position[0] + 2)
+    j_min = max(0, position[1] - 1)
+    j_max = min(energy_levels.shape[0], position[1] + 2)
+    energy_levels[i_min:i_max, j_min:j_max] += 1
+
+
+def do_step(energy_levels):
     number_of_flashes = 0
-    energy_levels = np.array([list(line) for line in input], dtype=int)
-    for steps in range(0, 100):
         energy_levels += 1
         flashed = np.zeros(energy_levels.shape, dtype=bool)
         flashing = np.logical_and(energy_levels > 9, ~flashed)
         flashing = list(np.transpose(flashing.nonzero()))
         while len(flashing) > 0:
             index = flashing.pop()
-            i_min = max(0, index[0] - 1)
-            i_max = min(energy_levels.shape[1], index[0] + 2)
-            j_min = max(0, index[1] - 1)
-            j_max = min(energy_levels.shape[0], index[1] + 2)
-            energy_levels[i_min:i_max, j_min:j_max] += 1
+        increase_around(energy_levels, index)
             flashed[index[0], index[1]] = True
             number_of_flashes += 1
             flashing = np.logical_and(energy_levels > 9, ~flashed)
             flashing = list(np.transpose(flashing.nonzero()))
         energy_levels[flashed] = 0
+    return number_of_flashes
+
+
+def day11a(input):
+    number_of_flashes = 0
+    energy_levels = np.array([list(line) for line in input], dtype=int)
+    for steps in range(0, 100):
+        number_of_flashes += do_step(energy_levels)
     return number_of_flashes
 
 
