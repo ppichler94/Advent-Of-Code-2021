@@ -19,18 +19,18 @@ def increase_around(energy_levels, position):
 
 def do_step(energy_levels):
     number_of_flashes = 0
-        energy_levels += 1
-        flashed = np.zeros(energy_levels.shape, dtype=bool)
+    energy_levels += 1
+    flashed = np.zeros(energy_levels.shape, dtype=bool)
+    flashing = np.logical_and(energy_levels > 9, ~flashed)
+    flashing = list(np.transpose(flashing.nonzero()))
+    while len(flashing) > 0:
+        index = flashing.pop()
+        increase_around(energy_levels, index)
+        flashed[index[0], index[1]] = True
+        number_of_flashes += 1
         flashing = np.logical_and(energy_levels > 9, ~flashed)
         flashing = list(np.transpose(flashing.nonzero()))
-        while len(flashing) > 0:
-            index = flashing.pop()
-        increase_around(energy_levels, index)
-            flashed[index[0], index[1]] = True
-            number_of_flashes += 1
-            flashing = np.logical_and(energy_levels > 9, ~flashed)
-            flashing = list(np.transpose(flashing.nonzero()))
-        energy_levels[flashed] = 0
+    energy_levels[flashed] = 0
     return number_of_flashes
 
 
@@ -43,7 +43,14 @@ def day11a(input):
 
 
 def day11b(input):
-    return 0
+    energy_levels = np.array([list(line) for line in input], dtype=int)
+    steps = 0
+    while True:
+        do_step(energy_levels)
+        steps += 1
+        if np.all(energy_levels == energy_levels[0]):
+            return steps
+    return steps
 
 
 def main():
