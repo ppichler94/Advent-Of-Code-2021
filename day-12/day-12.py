@@ -10,34 +10,55 @@ def read_input_from_file(file_name):
     return input
 
 
-def visit_allowed_a(node, path):
+def visit_allowed_a(node, visited_small_caves):
     if node == node.lower():
-        return sum(x == node for x in path) < 1
+        return sum(x == node for x in visited_small_caves) < 1
     return True
 
 
-def explore_paths(G, current, path, paths):
-    if not visit_allowed_a(current, path):
+def visit_allowed_b(node, visited_small_caves):
+    if node != "end" and node == node.lower():
+        sums = {x: visited_small_caves.count(x) for x in visited_small_caves}
+        if node == "start" and sum(x == "start" for x in visited_small_caves) > 0:
+            return False
+        if sum(v == 2 for v in sums.values()) == 1:
+            if node in sums:
+                return sums[node] < 1
+            else:
+                return True
+        if sum(v == 2 for v in sums.values()) == 0:
+            return True
+    return True
+
+
+def explore_paths(g, current, path, paths, visited_small_caves, visit_allowed):
+    if not visit_allowed(current, visited_small_caves):
         return
+    if current == current.lower():
+        visited_small_caves.append(current)
     path.append(current)
     if current == "end":
-        paths.append(path)
+        paths[0] += 1
         return
 
-    for n in G.adj[current]:
-        explore_paths(G, n, list(path), paths)
+    for n in g.adj[current]:
+        explore_paths(g, n, list(path), paths, list(visited_small_caves), visit_allowed)
 
 
 def day12a(input):
-    paths = []
-    G = nx.Graph()
-    G.add_edges_from([tuple(x.split("-")) for x in input])
-    explore_paths(G, "start", [], paths)
-    return len(paths)
+    paths = [0]
+    g = nx.Graph()
+    g.add_edges_from([tuple(x.split("-")) for x in input])
+    explore_paths(g, "start", [], paths, [], visit_allowed_a)
+    return paths[0]
 
 
 def day12b(input):
-    return 0
+    paths = [0]
+    g = nx.Graph()
+    g.add_edges_from([tuple(x.split("-")) for x in input])
+    explore_paths(g, "start", [], paths, [], visit_allowed_b)
+    return paths[0]
 
 
 def main():
@@ -46,8 +67,8 @@ def main():
 
     print(f'Result example A: {day12a(example)}\n')
     print(f'Result puzzle data A: {day12a(input)}\n')
-    # print(f'Result example B: {day12b(example)}\n')
-    # print(f'Result puzzle data B: {day12b(input)}\n')
+    print(f'Result example B: {day12b(example)}\n')
+    print(f'Result puzzle data B: {day12b(input)}\n')
 
 
 if __name__ == "__main__":
