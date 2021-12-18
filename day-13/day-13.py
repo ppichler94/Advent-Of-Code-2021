@@ -23,7 +23,12 @@ def parse_lines(input):
             command = line.split(" ")[2].split("=")
             command[1] = int(command[1])
             commands.append(command)
-    
+
+    paper = build_paper(points)
+    return [paper, commands]
+
+
+def build_paper(points):
     x = max(point[0] for point in points) + 1
     y = max(point[1] for point in points) + 1
 
@@ -31,24 +36,21 @@ def parse_lines(input):
 
     for point in points:
         paper[point[1], point[0]] = 1
-
-    return [paper, commands]
+    return paper
 
 
 def do_folds(paper, commands):
     for command in commands:
         match command:
             case ["y", y]:
-                offset = 1 if paper.shape[0] % 2 == 0 else 0
                 upper = paper[0:y, :]
                 lower = np.zeros(upper.shape)
-                lower[-(y - offset):, :] = np.flipud(paper[y + 1:paper.shape[0], :])
+                lower[-(paper.shape[0] - y - 1):, :] = np.flipud(paper[y + 1:paper.shape[0], :])
                 paper = upper + lower
             case ["x", x]:
-                offset = 1 if paper.shape[1] % 2 == 0 else 0
                 left = paper[:, 0:x]
                 right = np.zeros(left.shape)
-                right[:, -(x - offset):] = np.fliplr(paper[:, x + 1:paper.shape[1]])
+                right[:, -(paper.shape[1] - x - 1):] = np.fliplr(paper[:, x + 1:paper.shape[1]])
                 paper = left + right
     return paper
 
@@ -60,7 +62,12 @@ def day13a(input):
 
 
 def day13b(input):
-    return 0
+    [paper, commands] = parse_lines(input)
+    paper = do_folds(paper, commands)
+    output = ""
+    for row in paper:
+        output += "\n" + "".join([" " if x == 0 else "#" for x in row])
+    return output
 
 
 def main():
