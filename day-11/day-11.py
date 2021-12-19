@@ -37,7 +37,7 @@ def do_step(energy_levels):
 def day11a(input):
     number_of_flashes = 0
     energy_levels = np.array([list(line) for line in input], dtype=int)
-    for steps in range(0, 100):
+    for _ in range(0, 100):
         number_of_flashes += do_step(energy_levels)
     return number_of_flashes
 

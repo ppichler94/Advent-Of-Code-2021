@@ -1,4 +1,3 @@
-import numpy as np
 import networkx as nx
 
 
@@ -21,12 +20,13 @@ def visit_allowed_b(node, visited_small_caves):
         sums = {x: visited_small_caves.count(x) for x in visited_small_caves}
         if node == "start" and sum(x == "start" for x in visited_small_caves) > 0:
             return False
-        if sum(v == 2 for v in sums.values()) == 1:
+        small_caves_visited_two_times = sum(v == 2 for v in sums.values())
+        if small_caves_visited_two_times == 1:
             if node in sums:
                 return sums[node] < 1
             else:
                 return True
-        if sum(v == 2 for v in sums.values()) == 0:
+        if small_caves_visited_two_times == 0:
             return True
     return True
 
@@ -45,19 +45,11 @@ def explore_paths(g, current, path, paths, visited_small_caves, visit_allowed):
         explore_paths(g, n, list(path), paths, list(visited_small_caves), visit_allowed)
 
 
-def day12a(input):
+def run(input, visit_allowed):
     paths = [0]
     g = nx.Graph()
     g.add_edges_from([tuple(x.split("-")) for x in input])
-    explore_paths(g, "start", [], paths, [], visit_allowed_a)
-    return paths[0]
-
-
-def day12b(input):
-    paths = [0]
-    g = nx.Graph()
-    g.add_edges_from([tuple(x.split("-")) for x in input])
-    explore_paths(g, "start", [], paths, [], visit_allowed_b)
+    explore_paths(g, "start", [], paths, [], visit_allowed)
     return paths[0]
 
 
@@ -65,10 +57,10 @@ def main():
     example = read_input_from_file("day-12/example.txt")
     input = read_input_from_file("day-12/input.txt")
 
-    print(f'Result example A: {day12a(example)}\n')
-    print(f'Result puzzle data A: {day12a(input)}\n')
-    print(f'Result example B: {day12b(example)}\n')
-    print(f'Result puzzle data B: {day12b(input)}\n')
+    print(f'Result example A: {run(example, visit_allowed_a)}\n')
+    print(f'Result puzzle data A: {run(input, visit_allowed_a)}\n')
+    print(f'Result example B: {run(example, visit_allowed_b)}\n')
+    print(f'Result puzzle data B: {run(input, visit_allowed_b)}\n')
 
 
 if __name__ == "__main__":
