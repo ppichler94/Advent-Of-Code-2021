@@ -1,3 +1,5 @@
+from collections import Counter
+from functools import lru_cache
 
 
 def read_input_from_file(file_name):
@@ -18,21 +20,30 @@ def parse_input(input):
 
 
 def run_steps(template, rules, step_count):
-    for _ in range(10):
-        new_template = ""
-        pairs = [template[i:i+2] for i in range(len(template) - 1)]
-        for pair in pairs:
-            new_template += pair[0] + rules[pair]
-        new_template += template[-1]
-        template = new_template
-    return template
+    @lru_cache(maxsize=None)
+    def count(pair, step):
+        if step == step_count or pair not in rules:
+            return Counter()
+
+        step += 1
+        insertion = rules[pair]
+        counter = Counter(insertion)
+        counter.update(count(pair[0] + insertion, step))
+        counter.update(count(insertion + pair[1], step))
+        return counter
+
+    counter = Counter(template)
+    for left, right in zip(template, template[1:]):
+        counter.update(count(left + right, 0))
+    return counter
 
 
 def run(input, steps):
     [template, rules] = parse_input(input)
-    template = run_steps(template, rules, steps)
-    counts = [template.count(x) for x in set(template)]
-    return max(counts) - min(counts)
+    counter = run_steps(template, rules, steps)
+    maximum = max(counter.values())
+    minimum = min(counter.values())
+    return maximum - minimum
 
 
 def main():
@@ -41,8 +52,8 @@ def main():
 
     print(f'Result example A: {run(example, 10)}\n')
     print(f'Result puzzle data A: {run(input, 10)}\n')
-    # print(f'Result example B: {run(example)}\n')
-    # print(f'Result puzzle data B: {run(input)}\n')
+    print(f'Result example B: {run(example, 40)}\n')
+    print(f'Result puzzle data B: {run(input, 40)}\n')
 
 
 if __name__ == "__main__":
