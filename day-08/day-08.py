@@ -1,37 +1,37 @@
-def readInputFromFile(fileName):
-    inputFile = open(fileName, "r")
-    input = inputFile.readlines()
+def read_input_from_file(file_name):
+    input_file = open(file_name, "r")
+    input = input_file.readlines()
     input = [x.strip() for x in input]
-    inputFile.close()
+    input_file.close()
     return input
 
 
-def day08A(input):
-    uniqueNumbers = 0
+def day08a(input):
+    unique_numbers = 0
     for line in input:
-        outputValue = line.split("|")[1]
-        for value in outputValue.split(" "):
+        output_value = line.split("|")[1]
+        for value in output_value.split(" "):
             if len(value) in [2, 3, 4, 7]:
-                uniqueNumbers += 1
-    return uniqueNumbers
+                unique_numbers += 1
+    return unique_numbers
 
 
-def formatInput(input):
+def format_input(input):
     return list(map(lambda w: ''.join(sorted(w)), input))
 
 
-def findUniques(line, tmp):
-    lengthMap = {2: 1, 3: 7, 4: 4, 7: 8}
+def find_uniques(line, tmp):
+    length_map = {2: "1", 3: "7", 4: "4", 7: "8"}
     for word in line:
-        if len(word) in lengthMap:
-            tmp[lengthMap[len(word)]] = word
+        if len(word) in length_map:
+            tmp[length_map[len(word)]] = word
 
 
 # one character is different between 1 and 6
 def find6(line, tmp):
     for word in line:
-        if len(word) == 6 and any(character not in word for character in tmp[1]):
-            tmp[6] = word
+        if len(word) == 6 and any(character not in word for character in tmp["1"]):
+            tmp["6"] = word
             break
 
 
@@ -39,9 +39,9 @@ def find6(line, tmp):
 def find0(line, tmp):
     for word in line:
         if (len(word) == 6
-                and any(character not in word for character in tmp[4])
+                and any(character not in word for character in tmp["4"])
                 and word not in tmp.values()):
-            tmp[0] = word
+            tmp["0"] = word
             break
 
 
@@ -49,15 +49,15 @@ def find0(line, tmp):
 def find9(line, tmp):
     for word in line:
         if len(word) == 6 and word not in tmp.values():
-            tmp[9] = word
+            tmp["9"] = word
             break
 
 
 # all characters of 5 are in 6
 def find5(line, tmp):
     for word in line:
-        if len(word) == 5 and all(character in tmp[6] for character in word):
-            tmp[5] = word
+        if len(word) == 5 and all(character in tmp["6"] for character in word):
+            tmp["5"] = word
             break
 
 
@@ -65,9 +65,9 @@ def find5(line, tmp):
 def find3(line, tmp):
     for word in line:
         if (len(word) == 5
-                and all(character in tmp[9] for character in word)
+                and all(character in tmp["9"] for character in word)
                 and word not in tmp.values()):
-            tmp[3] = word
+            tmp["3"] = word
             break
 
 
@@ -75,19 +75,19 @@ def find3(line, tmp):
 def find2(line, tmp):
     for word in line:
         if len(word) == 5 and word not in tmp.values():
-            tmp[2] = word
+            tmp["2"] = word
             break
 
 
-def day08B(input):
-    pattern = list(map(formatInput, [line.split("|")[0].strip().split() for line in input]))
-    output = list(map(formatInput, [line.split("|")[1].strip().split() for line in input]))
+def day08b(input):
+    pattern = list(map(format_input, [line.split("|")[0].strip().split() for line in input]))
+    output = list(map(format_input, [line.split("|")[1].strip().split() for line in input]))
     total = 0
 
-    for line, outputValue in zip(pattern, output):
+    for line, output_value in zip(pattern, output):
         tmp = {}
 
-        findUniques(line, tmp)
+        find_uniques(line, tmp)
         find6(line, tmp)
         find0(line, tmp)
         find9(line, tmp)
@@ -97,19 +97,19 @@ def day08B(input):
 
         code = {v: k for k, v in tmp.items()}
 
-        total += int(''.join(map(str, [code[word] for word in outputValue])))
+        total += int(''.join([code[word] for word in output_value]))
 
     return total
 
 
 def main():
-    example = readInputFromFile("day-08/example.txt")
-    input = readInputFromFile("day-08/input.txt")
+    example = read_input_from_file("day-08/example.txt")
+    input = read_input_from_file("day-08/input.txt")
 
-    print(f'Result example A: {day08A(example)}\n')
-    print(f'Result puzzle data A: {day08A(input)}\n')
-    print(f'Result example B: {day08B(example)}\n')
-    print(f'Result puzzle data B: {day08B(input)}\n')
+    print(f'Result example A: {day08a(example)}\n')
+    print(f'Result puzzle data A: {day08a(input)}\n')
+    print(f'Result example B: {day08b(example)}\n')
+    print(f'Result puzzle data B: {day08b(input)}\n')
 
 
 if __name__ == "__main__":
