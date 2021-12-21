@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-Packet = namedtuple("Packet", ["version", "type"])
+Packet = namedtuple("Packet", ["version", "type", "length", "value", "subpackets"])
 
 
 def read_input_from_file(file_name):
@@ -11,20 +11,20 @@ def read_input_from_file(file_name):
     return input
 
 
-def parse_packet(data, packets):
+def parse_packet(data):
     version = int(data[0:3], 2)
     type = int(data[3:6], 2)
     data = data[6:]
 
-    packets.append(Packet(version, type))
-
-    processed = 6
+    value = 0
+    length = 6
+    subpackets = []
     match type:
         case 4:  # literal
             value = ""
             while True:
                 value += data[1:5]
-                processed += 5
+                length += 5
                 if data[0] == "0":
                     data = data[5:]
                     break
@@ -35,28 +35,38 @@ def parse_packet(data, packets):
         case _:  # operator
             length_type = data[0]
             if length_type == "0":
-                length = int(data[1:16], 2)
-                processed += 16
+                subpacket_length = int(data[1:16], 2)
+                length += 16
                 data = data[16:]
                 used = 0
-                while used < length:
-                    ret = parse_packet(data, packets)
-                    data = data[ret:]
-                    used += ret
-                    processed += ret
+                while used < subpacket_length:
+                    subpacket = parse_packet(data)
+                    data = data[subpacket.length:]
+                    used += subpacket.length
+                    length += subpacket.length
+                    subpackets.append(subpacket)
             else:
                 packet_count = int(data[1:12], 2)
                 data = data[12:]
-                processed += 12
+                length += 12
                 for _ in range(packet_count):
-                    ret = parse_packet(data, packets)
-                    data = data[ret:]
-                    processed += ret
+                    subpacket = parse_packet(data)
+                    data = data[subpacket.length:]
+                    length += subpacket.length
+                    subpackets.append(subpacket)
 
-    return processed
+    return Packet(version, type, length, value, subpackets)
 
 
-def run(input):
+def sum_version(packet):
+    sum = packet.version
+    for subpacket in packet.subpackets:
+        sum += sum_version(subpacket)
+    return sum
+
+
+def run(input, title):
+    print(title)
     lut = {"0": "0000",
            "1": "0001",
            "2": "0010",
@@ -74,25 +84,20 @@ def run(input):
            "E": "1110",
            "F": "1111"}
     data = ''.join(lut[x] for x in input[0])
-    packets = []
 
-    parse_packet(data, packets)
-
-    return sum(packet.version for packet in packets)
+    packet = parse_packet(data)
+    sum = sum_version(packet)
+    print(f"Version sum: {sum}")
 
 
 def main():
     example = read_input_from_file("day-16/example.txt")
     input = read_input_from_file("day-16/input.txt")
 
-    examples = [run([x]) for x in example]
+    for e in example:
+        run([e], f"example {e}")
 
-    for example in examples:
-        print(f"Result example A: {example}\n")
-
-    print(f'Result puzzle data A: {run(input)}\n')
-    # print(f'Result example B: {run(example)}\n')
-    # print(f'Result puzzle data B: {run(input)}\n')
+    run(input, "puzzle data")
 
 
 if __name__ == "__main__":
