@@ -1,6 +1,13 @@
-from collections import namedtuple
+import numpy as np
 
-Packet = namedtuple("Packet", ["version", "type", "length", "value", "subpackets"])
+
+class Packet:
+    def __init__(self, version, type, length, value, subpackets) -> None:
+        self.version = version
+        self.type = type
+        self.length = length
+        self.value = value
+        self.subpackets = subpackets
 
 
 def read_input_from_file(file_name):
@@ -11,6 +18,18 @@ def read_input_from_file(file_name):
     return input
 
 
+def calculate_value(type, subpackets):
+    match type:
+        case 0: return sum(sub.value for sub in subpackets)
+        case 1: return np.prod([sub.value for sub in subpackets])
+        case 2: return min(sub.value for sub in subpackets)
+        case 3: return max(sub.value for sub in subpackets)
+        case 5: return 1 if subpackets[0].value > subpackets[1].value else 0
+        case 6: return 1 if subpackets[0].value < subpackets[1].value else 0
+        case 7: return 1 if subpackets[0].value == subpackets[1].value else 0
+        case _: return 0
+
+
 def parse_packet(data):
     version = int(data[0:3], 2)
     type = int(data[3:6], 2)
@@ -19,41 +38,41 @@ def parse_packet(data):
     value = 0
     length = 6
     subpackets = []
-    match type:
-        case 4:  # literal
-            value = ""
-            while True:
-                value += data[1:5]
-                length += 5
-                if data[0] == "0":
-                    data = data[5:]
-                    break
-                else:
-                    data = data[5:]
-            value = int(value, 2)
-
-        case _:  # operator
-            length_type = data[0]
-            if length_type == "0":
-                subpacket_length = int(data[1:16], 2)
-                length += 16
-                data = data[16:]
-                used = 0
-                while used < subpacket_length:
-                    subpacket = parse_packet(data)
-                    data = data[subpacket.length:]
-                    used += subpacket.length
-                    length += subpacket.length
-                    subpackets.append(subpacket)
+    if type == 4:
+        value = ""
+        while True:
+            value += data[1:5]
+            length += 5
+            if data[0] == "0":
+                data = data[5:]
+                break
             else:
-                packet_count = int(data[1:12], 2)
-                data = data[12:]
-                length += 12
-                for _ in range(packet_count):
-                    subpacket = parse_packet(data)
-                    data = data[subpacket.length:]
-                    length += subpacket.length
-                    subpackets.append(subpacket)
+                data = data[5:]
+        value = int(value, 2)
+
+    else:
+        length_type = data[0]
+        if length_type == "0":
+            subpacket_length = int(data[1:16], 2)
+            length += 16
+            data = data[16:]
+            used = 0
+            while used < subpacket_length:
+                subpacket = parse_packet(data)
+                data = data[subpacket.length:]
+                used += subpacket.length
+                length += subpacket.length
+                subpackets.append(subpacket)
+        else:
+            packet_count = int(data[1:12], 2)
+            data = data[12:]
+            length += 12
+            for _ in range(packet_count):
+                subpacket = parse_packet(data)
+                data = data[subpacket.length:]
+                length += subpacket.length
+                subpackets.append(subpacket)
+        value = calculate_value(type, subpackets)
 
     return Packet(version, type, length, value, subpackets)
 
@@ -88,6 +107,7 @@ def run(input, title):
     packet = parse_packet(data)
     sum = sum_version(packet)
     print(f"Version sum: {sum}")
+    print(f"Value: {packet.value}\n")
 
 
 def main():
