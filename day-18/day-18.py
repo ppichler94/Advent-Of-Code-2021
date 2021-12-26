@@ -1,5 +1,6 @@
 import math
 import re
+import itertools
 
 
 def read_input_from_file(file_name):
@@ -84,10 +85,22 @@ def part1(input):
     print(f"Part 1 magnitude: {magnitude(number)}")
 
 
+def part2(input):
+    magnitudes = []
+    pairs = list(itertools.permutations(input, 2))
+    for pair in pairs:
+        number = f"{pair[0]} + {pair[1]}"
+        number = add(number)
+        number = reduce(number)
+        magnitudes.append(magnitude(number))
+    print(f"Part2 max magnitude: {max(magnitudes)}")
+
+
 def main():
     input = read_input_from_file("day-18/input.txt")
 
     part1(input)
+    part2(input)
 
 
 if __name__ == "__main__":
