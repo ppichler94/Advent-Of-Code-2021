@@ -38,13 +38,12 @@ def print_image(image) -> None:
     print("")
 
 
-def run(data: list) -> None:
+def run(data: list, steps: int) -> None:
     enhancement = data[0]
     image = [list(line) for line in data[2:]]
     image = np.array(image)
     image = np.where(image == ".", 0, 1)
 
-    steps = 2
     for step in range(steps):
         image = apply_enhancement(image, enhancement, step)
     lit = np.count_nonzero(image)
@@ -56,9 +55,14 @@ def main() -> None:
     data = read_input_from_file("day-20/input.txt")
 
     print("Example Part 1")
-    run(example_data)
+    run(example_data, 2)
     print("Input data Part 1")
-    run(data)
+    run(data, 2)
+
+    print("Example Part 2")
+    run(example_data, 50)
+    print("Input data Part 2")
+    run(data, 50)
 
 
 if __name__ == "__main__":
