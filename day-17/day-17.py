@@ -17,8 +17,15 @@ def read_input_from_file(file_name):
     return input
 
 
+def sign(x):
+    if x < 0:
+        return -1
+    if x > 0:
+        return 1
+    return 0
+
+
 def calculate_trajectory(velocity, target):
-    sign = lambda x: x and (-1 if x < 0 else 1)
     vx, vy = velocity
     x, y = 0, 0
     x_min, x_max, y_min, y_max = target
@@ -58,7 +65,7 @@ def part_b(input, title):
         result = calculate_trajectory(velocity, target)
         if result == Result.Hit:
             hits.append(velocity)
-    
+
     print(f"found {len(hits)} initial velocities")
 
 
