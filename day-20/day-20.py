@@ -1,8 +1,10 @@
 import numpy as np
+import os
 
 
 def read_input_from_file(file_name: str) -> list:
-    input_file = open(file_name, "r")
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    input_file = open(f"{script_path}/{file_name}", "r")
     data = input_file.readlines()
     data = [x.strip() for x in data]
     input_file.close()
@@ -51,8 +53,8 @@ def run(data: list, steps: int) -> None:
 
 
 def main() -> None:
-    example_data = read_input_from_file("day-20/example.txt")
-    data = read_input_from_file("day-20/input.txt")
+    example_data = read_input_from_file("example.txt")
+    data = read_input_from_file("input.txt")
 
     print("Example Part 1")
     run(example_data, 2)
